@@ -10,11 +10,11 @@ contract Decentragram {
     string hash;
     string description;
     uint tipAmount;
-    address payable author memory;
+    address author;
   }
   //Create Images
   function uploadImage() public {
-    images[1] = Image(1,'abc', 'Hello World', 0, address());
+    images[1] = Image(1,'abc', 'Hello World', 0, address(0x0));
    }
   //Tip Images
 
