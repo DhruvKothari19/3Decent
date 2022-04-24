@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Identicon from 'identicon.js';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Main extends Component {
 
@@ -7,7 +9,7 @@ class Main extends Component {
     return (
       <div className="container-fluid mt-5">
         <div className="row">
-          <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '700px' }}>
+          <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '500px' }}>
             <div className="content mr-auto ml-auto">
               <p>&nbsp;</p>
               <h2>Share Image</h2>
@@ -15,8 +17,10 @@ class Main extends Component {
                 event.preventDefault()
                 const description = this.imageDescription.value
                 this.props.uploadImage(description)
+                
               }}>
-              <input type='file' accept=".jpg, jpeg, png, .bmp, .gif" onChange={this.props.captureFile}/>
+               
+              <input type='file' accept=".jpg, .jpeg, .png, .bmp, .gif, .mp4" onChange={this.props.captureFile}/>
               <div className="form-group mr-sm-2">
               <br></br>
               <input
@@ -58,6 +62,7 @@ class Main extends Component {
             let tipAmount = window.web3.utils.toWei('0.1', 'Ether')
             console.log(event.target.name, tipAmount)
             this.props.tipImageOwner(event.target.name, tipAmount)
+            
           }}
           >
           TIP 0.1 ETH
@@ -65,9 +70,49 @@ class Main extends Component {
                     </button>
                   </li>
                 </ul>
+                {/* {this.props.comments.map((comment, key)=>{
+                 return(
+                  <div className="card mb-4" key={key} >
+                    <p>{comment.comment}</p>
+                  </div>
+                 )
+                })
+                } */}
+                <form onSubmit={(event) => {
+                event.preventDefault()
+                const addcomment = this.imageComment.value
+                this.props.newComment(addcomment)
+                
+              }}>
+              <div className="form-group mr-sm-2">
+              <br></br>
+              <input
+               id="imageComment" 
+               type="text"
+               ref={(input) => { this.imageComment = input }}
+               className="form-control"
+               placeholder="Add a comment"
+               required />
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">Comment!</button>
+              
+ 
+              </form>
+              
+              { this.props.comments.map((comment, key) => {
+                return(
+                  <div className="card mb-4" key={key} >
+                    <p>{comment.addcomment}</p>
+                  </div>                  
+                )}
+              
+                
+              )}
               </div>
               )
-        })}
+            }
+          )
+        }
             </div>
           </main>
         </div>

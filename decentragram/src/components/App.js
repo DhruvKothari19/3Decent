@@ -5,6 +5,10 @@ import './App.css';
 import Decentragram from '../abis/Decentragram.json'
 import Navbar from './Navbar'
 import Main from './Main'
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
+
+
 
 const ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }) // leaving out the arguments will default to these values
@@ -12,6 +16,7 @@ const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' 
 
 
 class App extends Component {
+  
   async componentWillMount(){
     await this.loadWeb3()
     await this.loadBlockchainData()
@@ -68,6 +73,20 @@ class App extends Component {
   }
 }
 uploadImage = description => {
+  const notify = () => { 
+    toast('🥳 Upload Successful!', {
+      position: "bottom-left",
+      autoClose: 30000, 
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      }); 
+    console.log("Passing")
+  };
+  
+
   console.log("Submitting file to ipfs...")
   //adding file to the IPFS
   ipfs.add(this.state.buffer, (error, result) => {
@@ -79,28 +98,64 @@ uploadImage = description => {
    this.setState({ loading: true })
    this.state.decentragram.methods.uploadImage(result[0].hash, description).send({ from: this.state.account }).on('transactionHash', (hash) =>{ 
    this.setState({ loading: false })
-   window.alert("Successfully uploaded")
+   
+  // window.location.reload()
+  {notify()}
+  //  toast.success("Successfully Uploaded your post to Blockchain", {position: toast.POSITION.BOTTOM_RIGHT})
   })
   })
 }
 
 tipImageOwner = (id, tipAmount) => {
+  // if (this.state.account == ) {
+    
+  // }
+  const notify = () => { 
+    toast('Post liked and Tipped! 💸', {
+      position: "bottom-left",
+      autoClose: 30000, 
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+    console.log("Passing")
+  };
+  console.log(this.state.decentragram.methods.tipImageOwner(id))
   this.setState({loading: true })
   this.state.decentragram.methods.tipImageOwner(id).send({ from: this.state.account, value: tipAmount }).on('transactionHash', (hash) => {
     this.setState({ loading: false })
+    {notify()}
   })
 }
-
-
-
-    
+newComment = (addcomment) =>{
+  const notify = () => { 
+    toast('Comment added! 💸', {
+      position: "bottom-left",
+      autoClose: 30000, 
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+    console.log("Passing")
+  };
+  this.setState({loading: true })
+  this.state.decentragram.methods.newComment(addcomment).send({ from: this.state.account }).on('transactionHash',(hash)=>{
+    this.setState({loading: false})
+    { notify() }
+  })
+}   
   constructor(props) {
     super(props)
     this.state = {
       account: '',
       decentragram: null,
       images: [],
-      loading: true
+      loading: true,
+      comments:[]
 
     }
   }
@@ -108,6 +163,7 @@ tipImageOwner = (id, tipAmount) => {
   render() {
     return (
       <div>
+        
         <Navbar account={this.state.account} />
         { this.state.loading
           ? <div id="loader" className="text-center mt-5"><p>Loading...</p></div>
@@ -116,9 +172,13 @@ tipImageOwner = (id, tipAmount) => {
             captureFile = { this.captureFile }
             uploadImage = { this.uploadImage }
             tipImageOwner = { this.tipImageOwner }
+            newComment = { this.newComment }
+            comments = { this.state.comments }
             />
-          }
-  
+            
+        }
+        <ToastContainer/>
+      
       </div>
     );
   }
