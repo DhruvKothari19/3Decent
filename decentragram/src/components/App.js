@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import Identicon from 'identicon.js';
 import './App.css';
 import Decentragram from '../abis/Decentragram.json'
-import Navbar from './Navbar'
 import Main from './Main'
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
@@ -53,9 +51,10 @@ class App extends Component {
   })
   } 
   // Sort images. Show highest tipped images first
-    this.setState({
-      images: this.state.images.sort((a,b) => b.tipAmount - a.tipAmount )
-    })
+    // this.setState({
+    //   // images: this.state.images.sort((a,b) => b.tipAmount - a.tipAmount )
+    //   // images: this.state.images.sort((a,b) => b.id - a.id )
+    // })
   
       this.setState({ loading: false})
   } else {
@@ -150,6 +149,7 @@ newComment = (addcomment) =>{
 }   
   constructor(props) {
     super(props)
+    this.input = React.createRef();
     this.state = {
       account: '',
       decentragram: null,
@@ -164,16 +164,32 @@ newComment = (addcomment) =>{
     return (
       <div>
         
-        <Navbar account={this.state.account} />
+        {/* <Navbar account={this.state.account} 
+        images = { this.state.images }
+        captureFile = { this.captureFile }
+        uploadImage = { this.uploadImage }
+        imageDescription = { this.input }
+        tipImageOwner = { this.tipImageOwner }
+        newComment = { this.newComment }
+        comments = { this.state.comments }/> */}
+  
+
+        
         { this.state.loading
-          ? <div id="loader" className="text-center mt-5"><p>Loading...</p></div>
+          ? <div id="loader" className="text-center mt-5">
+            <div class="loader">
+            </div>
+            <p className="loadingTitle"> Updating on Blockchain . . . </p>
+            </div>
           : <Main
             images = { this.state.images }
             captureFile = { this.captureFile }
             uploadImage = { this.uploadImage }
+            imageDescription = { this.input }
             tipImageOwner = { this.tipImageOwner }
-            newComment = { this.newComment }
-            comments = { this.state.comments }
+            // newComment = { this.newComment }
+            // comments = { this.state.comments }
+            account={this.state.account}
             />
             
         }
