@@ -24,9 +24,6 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 
 
-
-
-
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -73,11 +70,18 @@ class Main extends Component {
     images: this.props.images.sort((a,b) => b.tipAmount - a.tipAmount ),
     openModal : false,
     preview: null,
-    search: ''
+    search: '',
+    minWidth: ''
 }
-renderPost =  image => {
+renderPost = (image,key) => {
+  const { search } = this.state;
+  const imageid = image.id;
+    if( search!== "" && image.description.toLowerCase().indexOf( search.toLowerCase()) === -1 ){
+      return null
+    }else{
+      console.log(image)
   return (
-    <div className="card mb-4 rhs1" >
+    <div className="card mb-4 rhs1" key = {key}>
       <div className="card-header">
         <img
           alt = 'profile'
@@ -89,19 +93,19 @@ renderPost =  image => {
           </div>
             <ul id="imageList" className="list-group list-group-flush">
               <li className="list-group-item">
-                <p className="text-center"><img src={`https://ipfs.infura.io/ipfs/${image.hash}`} style={{ maxWidth: '750px' , minWidth:'400px'}} /></p>
+                <p className="text-center"><img src={`https://ipfs.infura.io/ipfs/${image.hash}`} style={{ minwidth: "400px", maxWidth: "750px"}} /></p>
                 <p className='desc'>{image.description}</p>
               </li>
-              <li className="list-group-item py-2">
+              <li key = {key} className="list-group-item py-2">
                 <small className="float-left mt-1 text-muted">
                    TOTAL TIPS: {window.web3.utils.fromWei(image.tipAmount.toString(), 'Ether')} ETH </small>
                 <button
                   className="btn btn-link btn-sm float-right pt-0"
                   name={image.id}
-                  onClick={(event) => {
+                  onClick={() => {
                     let tipAmount = window.web3.utils.toWei('0.1', 'Ether');
-                    console.log(event.target.name, tipAmount);
-                    this.props.tipImageOwner(event.target.name, tipAmount);
+                    console.log(image.id, tipAmount);
+                    this.props.tipImageOwner(image.id, tipAmount);
 
                   }
                   }>
@@ -111,6 +115,7 @@ renderPost =  image => {
                 </ul>
             </div>
   )
+}
 }
   toggleFeed = (checked) => {
     if (checked) {
@@ -130,7 +135,8 @@ handleChange = e =>{
   })
 }
 onCloseModal = ()=>{
-    this.setState({openModal : false})
+    this.setState({openModal : false,
+    preview : null})
 }
 onchange = e =>{
   this.setState({search: e.target.value});  
@@ -138,11 +144,6 @@ onchange = e =>{
 
 
   render() {
-    const { search } = this.state;
-    const filteredImages = this.props.images.filter(image => {
-      return image.description.toLowerCase().indexOf(search.toLowerCase()) !== -1 ;
-
-    });
     return (
       
         <><Box sx={{ flexGrow: 1 }}>
@@ -180,7 +181,9 @@ onchange = e =>{
                     required />
                 </div>
                 <button type="submit" className="btn btn-primary btn-block btn-lg">Upload!</button>
-                <img id="preview" src={this.state.preview} alt="" />
+                
+                <img id="preview" src={this.state.preview} style = {{minwidth: "400px", maxWidth: "750px", height: "auto"}} alt="" />
+                
               </form>
             </Modal>
             <Search>
@@ -213,8 +216,6 @@ onchange = e =>{
               handleDiameter={30}
               uncheckedIcon={<PaidIcon style={{height:"1.3rem",paddingLeft:"7px",color:"black"}}/>}
               checkedIcon={<AccessTimeIcon style={{height:"1.3rem",paddingLeft:"7px",color:"black"}}/>}
-              boxShadow="0px 1px 5px rgba(256, 0, 0, 1)"
-              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 256, 0.2)"
               height={30}
               width={60}
               onChange={this.toggleFeed} checked={this.state.checked}/>
@@ -250,10 +251,52 @@ onchange = e =>{
             <main role="main" className="col mt-5 ml-auto mr-auto" style={{ maxWidth: '900px' }}>
 
               <div className="content mr-auto ml-auto rhs">
-
-              {filteredImages.map(image => {
-                return this.renderPost(image);
-              })}                 
+          {/* {this.state.search === '' && (
+                this.props.images.map((image, key) => {
+                  return(
+                  <div className="card mb-4" key={key} >
+                  <div className="card-header">
+                    <img
+                      className='mr-2'
+                      width='30'
+                      height='30'
+                      src={ `data:image/png;base64, ${new Identicon(image.author, 30).toString()}`}
+                    />
+                    <small className="text-muted">{image.author}</small>
+                  </div>
+                  <ul id="imageList" className="list-group list-group-flush">
+                  <li className="list-group-item">
+                  <p className="text-center"><img src= {`https://ipfs.infura.io/ipfs/${image.hash}`} style= {{ maxWidth:'420px'}}/> </p>
+                  <p>{image.description}</p>
+                  </li>
+                  <li key={key} className="list-group-item py-2">
+                  <small className="float-left mt-1 text-muted">
+                  TIPS: {window.web3.utils.fromWei(image.tipAmount.toString(), 'Ether')} ETH </small>
+                  <button
+                  className="btn btn-link btn-sm float-right pt-0"
+                  name={image.id}
+                onClick={(event) => {
+                let tipAmount = window.web3.utils.toWei('0.1', 'Ether')
+                console.log(event.target.name, tipAmount)
+                this.props.tipImageOwner(event.target.name, tipAmount)
+                
+              }}
+              >
+              TIP 0.1 ETH
+    
+                        </button>
+                      </li>
+                    </ul>
+              </div>
+              )
+  }
+  )
+  )
+  }
+    */}
+              {this.props.images.map((image,key) => {
+                return this.renderPost(image,key);
+              })}        
                 
               </div>                
                 
